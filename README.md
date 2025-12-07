@@ -47,26 +47,25 @@ xdg-open index.html
 start index.html
 ```
 
-### Deploy to GitHub Pages
+### Deploy to Firebase Hosting
 
-1. **Create a new repository** on GitHub (or use an existing one)
+The site is hosted on Firebase Hosting for optimal performance and integration.
 
-2. **Push your code**:
+**Live Site:** https://workout-9ca84.web.app
+
+**To update the site after making changes:**
 ```bash
-git init
-git add .
-git commit -m "Initial commit: Add workout plan website"
-git branch -M main
-git remote add origin https://github.com/yourusername/workout-plan.git
-git push -u origin main
+cd "/home/bridgerkeddington/Desktop/Workout Plan"
+firebase deploy --only hosting
 ```
 
-3. **Enable GitHub Pages**:
-   - Go to your repository on GitHub
-   - Click on **Settings** → **Pages**
-   - Under **Source**, select `main` branch
-   - Click **Save**
-   - Your site will be live at: `https://yourusername.github.io/workout-plan/`
+**To update both GitHub and Firebase:**
+```bash
+git add .
+git commit -m "Your update message"
+git push origin main
+firebase deploy --only hosting
+```
 
 ## 📱 Usage
 
