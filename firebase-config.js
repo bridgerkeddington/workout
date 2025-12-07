@@ -1,3 +1,8 @@
+// Import Firebase modules
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js';
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js';
+import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteField } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js';
+
 // Firebase Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyAO7r8SrodxCjL7rpTV-95jq5a0XJY5EEY",
@@ -10,14 +15,6 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js';
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js';
-import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteField } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js';
-
-// Initialize Firebase
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js';
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js';
-import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteField } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js';
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -76,7 +73,11 @@ function updateAuthUI(isSignedIn) {
     const authButton = document.getElementById('auth-button');
     const userInfo = document.getElementById('user-info');
     
-    if (!authButton) return;
+    if (!authButton) {
+        // Button not ready yet, try again in a moment
+        setTimeout(() => updateAuthUI(isSignedIn), 100);
+        return;
+    }
     
     if (isSignedIn && currentUser) {
         authButton.textContent = '🚪 Sign Out';
