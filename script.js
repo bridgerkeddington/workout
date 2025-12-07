@@ -1,10 +1,13 @@
+// Import Firebase functions
+import { saveExerciseCompletion, isExerciseCompleted, saveCurrentDay, getCurrentDay, resetAllProgress } from './firebase-config.js';
+
 // Day Navigation
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const dayButtons = document.querySelectorAll('.day-btn');
     const workoutDays = document.querySelectorAll('.workout-day');
     
     // Function to switch days
-    function switchDay(dayNumber) {
+    async function switchDay(dayNumber) {
         // Update buttons
         dayButtons.forEach(btn => btn.classList.remove('active'));
         const activeBtn = document.querySelector(`[data-day="${dayNumber}"]`);
@@ -19,8 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
             activeDay.classList.add('active');
         }
         
-        // Save to localStorage
-        localStorage.setItem('currentDay', dayNumber);
+        // Save to Firebase/localStorage
+        await saveCurrentDay(dayNumber);
         
         // Scroll to top of workout
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -35,8 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Load saved day or default to day 1
-    const savedDay = localStorage.getItem('currentDay') || '1';
-    switchDay(savedDay);
+    const savedDay = await getCurrentDay();
+    await switchDay(savedDay);
     
     // Keyboard navigation (1-6 keys)
     document.addEventListener('keydown', (e) => {
@@ -46,51 +49,54 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Add exercise completion tracking
-    addExerciseTracking();
+    await addExerciseTracking();
     
     // Add progress statistics
     updateProgressStats();
 });
 
 // Exercise Completion Tracking
-function addExerciseTracking() {
+async function addExerciseTracking() {
     const tableRows = document.querySelectorAll('.table-row:not(.finisher)');
     
-    tableRows.forEach((row, index) => {
+    for (let index = 0; index < tableRows.length; index++) {
+        const row = tableRows[index];
+        
         // Skip header rows
-        if (row.classList.contains('table-header')) return;
+        if (row.classList.contains('table-header')) continue;
         
         const exerciseName = row.querySelector('.exercise-name');
-        if (!exerciseName) return;
+        if (!exerciseName) continue;
         
         const dayId = row.closest('.workout-day').id;
         const storageKey = `${dayId}-exercise-${index}`;
         
         // Check if exercise was previously completed
-        if (localStorage.getItem(storageKey) === 'completed') {
+        const isCompleted = await isExerciseCompleted(storageKey);
+        if (isCompleted) {
             row.classList.add('completed');
             addCheckmark(exerciseName);
         }
         
         // Add click handler for completion toggle
         row.style.cursor = 'pointer';
-        row.addEventListener('click', () => {
+        row.addEventListener('click', async () => {
             row.classList.toggle('completed');
             
             if (row.classList.contains('completed')) {
-                localStorage.setItem(storageKey, 'completed');
+                await saveExerciseCompletion(storageKey, true);
                 if (!exerciseName.querySelector('.checkmark')) {
                     addCheckmark(exerciseName);
                 }
             } else {
-                localStorage.removeItem(storageKey);
+                await saveExerciseCompletion(storageKey, false);
                 const checkmark = exerciseName.querySelector('.checkmark');
                 if (checkmark) checkmark.remove();
             }
             
             updateProgressStats();
         });
-    });
+    }
 }
 
 function addCheckmark(element) {
@@ -230,8 +236,9 @@ function addResetButton() {
     
     resetBtn.addEventListener('click', () => {
         if (confirm('Are you sure you want to reset all progress?')) {
-            localStorage.clear();
-            location.reload();
+            resetAllProgress().then(() => {
+                location.reload();
+            });
         }
     });
     

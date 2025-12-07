@@ -57,6 +57,37 @@ header h1 {
     font-size: 1.2rem;
     color: rgba(255, 255, 255, 0.9);
     font-weight: 300;
+    margin-bottom: 1.5rem;
+}
+
+/* Auth Section */
+.auth-section {
+    margin-top: 1.5rem;
+}
+
+.auth-btn {
+    padding: 0.75rem 2rem;
+    background: white;
+    color: var(--accent-primary);
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.user-info {
+    margin-top: 1rem;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 0.95rem;
+    font-weight: 500;
 }
 
 /* Stats Grid */
